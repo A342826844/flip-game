@@ -1,9 +1,11 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>You_Jump_I_Jump</title>
+    <title>FLIP</title>
     <meta charset="utf-8">
-    <meta name="author" content="zhoujie">
+
+<script src="./js/config.js"></script>
+<script src="./js/flexible.js"></script>
     <style>
         @font-face{font-family: 'numjump';src : url('source/num.ttf');}
         html, body{
@@ -13,6 +15,7 @@
         *{
             margin: 0;
             padding: 0;
+            /* user-select: none; */
         }
         #info {
 				position: absolute;
@@ -25,23 +28,24 @@
                 font-family:Microsoft YaHei
 			}
         #canvas-frame {
-            border: none;
-            cursor: pointer;
+            /* border: none; */
+            /* cursor: pointer; */
             width: 100%;
             height: 100%;
-            -webkit-touch-callout:none;
+            /* -webkit-touch-callout:none;
             -webkit-user-select:none;
             -moz-user-select:none;
             -ms-user-select:none;
-            user-select:none; 
+            user-select:none;  */
         }
         #point {
             position :absolute;
             left :120px;
             top :80px;
-            color: #464545;
-            font-size: 50px;
+            color: aliceblue;
+            font-size: 1rem;
             font-family: numjump;
+            user-select:none;
         }
         #gameBegin {
             position :absolute;
@@ -75,7 +79,7 @@
 <script src="js/WebGL.js"></script>
 <script src="js/Stats.js"></script>
 <script src="js/tween.min.js"></script>
-<script src="jquery/jquery-3.3.1.js"></script>
+<!-- <script src="jquery/jquery-3.3.1.js"></script> -->
 <!-- <script src="js/controls/OrbitControls.js"></script> -->
 
 <script>
@@ -127,7 +131,7 @@
         stats.domElement.style.width = '90px';
         // document.getElementById('canvas-frame').appendChild( stats.domElement );
  
-        camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, -1000, 2000 );
+        camera = new THREE.OrthographicCamera( width / - 2.5, width / 2.5, height / 2.5, height / - 2.5, -1000, 2000 );
         camera.position.set( 200 , 165 , 150 );
         camera.lookAt(new THREE.Vector3(0,0,0));
 
@@ -294,7 +298,6 @@
     }
 
     function jump(playerMoveLen) {
-        console.log(jumpDistance, buildDistance,playerPosition,player.position);
         if (direction == 1) {
             Option = { hpy:player.children[0].position.y,hsy:player.children[1].scale.y,hsx:player.children[1].scale.x,hsz:player.children[1].scale.z};
             jumpr1 = new TWEEN.Tween(Option)
@@ -312,6 +315,8 @@
                             })
             
             Option = { px:playerPosition.x ,py:0,pz:playerPosition.z};
+
+            console.log(playerPosition, '==playerPosition')
             jumpr2 = new TWEEN.Tween(Option)
                             .to({
                                 px:[playerPosition.x*0.5,0],
@@ -439,7 +444,7 @@
                             })  
                             .interpolation( TWEEN.Interpolation.Bezier )
             jumpr1.chain(jumpr2);
-            jumpr1.start();
+            jumpr1.start(); 
         }       
 
     }
@@ -858,9 +863,22 @@
 
     }
 
-    function pointCount() { 
+    function saveHistory() {
+        var historyHighest = getHistoryHighest();
+        if (point > historyHighest) {
+            setHistoryHighest(point);
+            historyHighest = point;
+            document.getElementById("normal_score").style.display = "none";
+            document.getElementById("new_score").style.display = "block";
+        }
+        document.getElementById("history_highest").innerHTML = historyHighest;
+
+    }
+
+    function pointCount() {
+        saveHistory();
         document.getElementById("gameOver").style.display = "block";
-        document.getElementById("point").style.display = "none"; 
+        document.getElementById("point").style.display = "none";
     }
 
     function pointGet() { 
@@ -1798,22 +1816,80 @@
     }
 
     function render() {
-    renderer.render( scene, camera );
+        renderer.render( scene, camera );
     }
 
     function replay() {
         location.reload(); 
     }
 
+    function revive() {
+        pointGet();
+        changeCamera();
+        bulingBulingUp();
+
+        var Option = { py: player.position.y + 200 };
+        new TWEEN.Tween(Option)
+                        .to({
+                            py: 50,
+                        },500)
+                        .onUpdate(function() {
+                            player.position.y = this.py;
+                            player.position.x = 0;
+                            player.position.z = 0;
+                            playerPosition.x = 0;
+                            playerPosition.z = 0;
+                        })
+                        .easing(TWEEN.Easing.Bounce.Out) 
+                        .delay(500)
+                        .start();   
+
+        document.getElementById("gameOver").style.display = "none";
+        document.getElementById("point").style.display = "block";
+    }
+
 </script>
+
+<style>
+    .start-btn{
+        background-color: aliceblue;
+        color: #222;
+        height: 1.5rem;
+        line-height: 1.5rem;
+        text-align: center;
+        font-size: 0.5rem;
+        width: 5rem;
+        border-radius: 2rem;
+        font-weight: bold;
+        border: none;
+        outline: none;
+    }
+    .start-btn:active{
+        background-color: antiquewhite;
+    }
+</style>
 
 <body onload="threeStart();">
 <div id="canvas-frame" ></div>
-<div id="point" > 0 </div>
+<div id="point" onclick="revive()"> 0 </div>
 <div id="gameOver" >
-    <p style="font-size:20px; margin-top:100px;font-weight: 200; ">本次得分</p>
-    <p style="font-size:80px; margin-top:20px; font-family: numjump;" id= "pointtotal" >0</p>
-    <img style="margin-top:80px;width:160px;height:60px;" src="source/bottom.png"  onclick="replay();">
+    <p id="normal_score"  style="font-size:0.5rem; margin-top:100px;font-weight: 200; ">本次得分</p>
+    <p id="new_score" style="font-size:0.5rem; margin-top:100px;font-weight: 200;display: none; ">= <span style="color: #f53c00">新纪录</span> =</p>
+    <p style="font-size:1rem; margin-top:20px; font-family: numjump;" id= "pointtotal" >0</p>
+    <button style="margin-top: 75%;" class="start-btn" onclick="revive();">
+        看广告复活
+    </button>
+    <button style="margin-top: 60px;" class="start-btn" onclick="replay();">
+        再玩一局
+    </button>
+    <p style="font-size:0.4rem; margin-top:100px;font-weight: 200; ">历史最高得分: <span id="history_highest">0</span></p>
+    <!-- <img style="margin-top:80px;width:160px;height:60px;" src="source/bottom.png"  onclick="replay();"> -->
 </div>
+<!-- <canvas style="position: absolute; top: 0;left: 0;z-index: 999;width: 100%;height: 100%;">
+
+</canvas> -->
+<!-- <div id="test" style="position: absolute; top: 0;left: 0;z-index: 999;width: 100%;height: 100%;" >
+
+</div> -->
 </body>
 </html>

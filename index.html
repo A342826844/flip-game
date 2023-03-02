@@ -1,9 +1,10 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>You_Jump_I_Jump</title>
+    <title>FLIP</title>
     <meta charset="utf-8">
-    <meta name="author" content="zhoujie">
+
+    <script src="./js/flexible.js"></script>
     <style>
         @font-face{font-family: 'numjump';src : url('source/num.ttf');}
         html, body{
@@ -1261,12 +1262,39 @@
 
 </script>
 
+<style>
+    .start-btn{
+        background-color: aliceblue;
+        color: #222;
+        height: 1.5rem;
+        line-height: 1.5rem;
+        text-align: center;
+        font-size: 0.5rem;
+        width: 5rem;
+        border-radius: 2rem;
+        margin-top: 86%;
+        font-weight: bold;
+        border: none;
+        outline: none;
+    }
+    .start-btn:active{
+        background-color: antiquewhite;
+    }
+</style>
+
 <body onload="threeStart();">
 <div id="canvas-frame" ></div>
 <div id="point" style="display:none" > 0 </div>
 <div id="gameBegin" >
-        <img style="margin-top:95px;width:250px;height:60px;" src="source/title.png"  >
-        <img style="margin-top:220px;width:200px;height:80px;" src="source/play.png"  onclick="play();">
+        <!-- <img style="margin-top:95px;width:250px;height:60px;" src="source/title.png"  > -->
+        <div style="margin-top:95px;text-align: center;font-size: 4em;">
+            跳一跳
+        </div>
+        <button class="start-btn" onclick="play();">
+            开始游戏
+        </button>
+        </div>
+        <!-- <img style="margin-top:220px;width:200px;height:80px;" src="source/play.png"  onclick="play();"> -->
 </div>
 
 </body>
