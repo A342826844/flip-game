@@ -73,6 +73,117 @@
             }
             
     </style>
+    <style>
+        .start-btn{
+            background-color: aliceblue;
+            color: #222;
+            height: 1.5rem;
+            line-height: 1.5rem;
+            text-align: center;
+            font-size: 0.5rem;
+            width: 5rem;
+            border-radius: 2rem;
+            font-weight: bold;
+            border: none;
+            outline: none;
+        }
+        .start-btn:active{
+            background-color: antiquewhite;
+        }
+        .video-box{
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 9999;
+            padding: 16px;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .margin-em{
+            margin: 0 0.5em;
+        }
+        .video-box-top{
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.8rem;
+        }
+        .video-radius{
+            height: 0.5rem;
+            line-height: 0.5rem;
+            border-radius: 0.5rem;
+            padding: 0 0.2rem;
+            background-color: #666;
+            border: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+        .radio-img{
+            width: 0.45rem;
+            height: auto;
+            margin: 0 3px;
+        }
+        .video-index{
+            width: 100%;
+            height: auto;
+        }
+        .card-download, .card-download1{
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 0.4rem;
+            /* height: 2rem; */
+            /* width: 100%; */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.45rem 0.2rem;
+        }
+        .card-download1{
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            /* background-color: transparent; */
+            background-color: rgba(255, 255, 255, 0.9);
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 50%;
+            height: 4rem;
+            margin: auto;
+            /* background-color: #222; */
+        }
+        .card-download-logo{
+            border-radius: 0.2rem;
+            width: 1rem;
+        }
+        .card-download-info{
+            flex: 1;
+            padding: 0 0.2rem;
+            text-align: left;
+            color: #222;
+        }
+        .card-download-title{
+            font-weight: bold;
+        }
+        .card-download-btn{
+            background-color: #f1561d;
+            border-radius: 0.2rem;
+            padding: .25rem .6rem;
+        }
+        .card-download1 .card-download-info{
+            text-align: center;
+            /* color: #eee; */
+            margin: 0.4rem 0;
+    
+        }
+    
+    
+    </style>
 </head>
 
 <script src="build/three.js"></script>
@@ -1848,26 +1959,92 @@
         document.getElementById("point").style.display = "block";
     }
 
-</script>
 
-<style>
-    .start-btn{
-        background-color: aliceblue;
-        color: #222;
-        height: 1.5rem;
-        line-height: 1.5rem;
-        text-align: center;
-        font-size: 0.5rem;
-        width: 5rem;
-        border-radius: 2rem;
-        font-weight: bold;
-        border: none;
-        outline: none;
+    function VideoModel(option) {
+        var defaultOptions = {
+            src: './source/video1.mp4',
+            countdown: 15,
+            adTtile: '24Trade Pro',
+            adTips: '快去下载送钱了',
+            muted: true,
+        }
+        this.init = function() {
+            this.option = option || defaultOptions;
+            this.countdown = this.option.countdown;
+            this.muted = false;
+            this.boxEl = document.getElementById('video_box');
+            this.countdownEl = document.getElementById('countdown');
+            this.ad_tips1El = document.getElementById('ad_tips1');
+            this.ad_tips2El = document.getElementById('ad_tips2');
+            this.video_idEl = document.getElementById('video_id');
+            this.card_downloadEl = document.getElementById('card_download');
+            this.card_download1El = document.getElementById('card_download1');
+            this.noticeEl = document.getElementById('notice');
+            this.mutedEl = document.getElementById('muted');
+            if (this.video_idEl) {
+                this.video_idEl.addEventListener('ended', () => {
+                    console.log('end')
+                    this.playEnd()
+                })
+            }
+        }
+        this.init()
+
+        this.playStart = function() {
+            console.log(this)
+            this.ad_tips1El.style.display = 'inline';
+            this.ad_tips2El.style.display = 'none';
+            
+            this.video_idEl.style.display = 'block';
+            this.card_download1El.style.display = 'none';
+            this.card_downloadEl.style.display = 'flex';
+
+            this.video_idEl.src = this.option.src;
+            this.video_idEl.play()
+            this.mutedHandle(false);
+            this.countdownHandle();
+        }
+        this.playEnd = function() {
+            this.ad_tips1El.style.display = 'none';
+            this.ad_tips2El.style.display = 'inline';
+            this.card_download1El.style.display = 'flex';
+            this.video_idEl.style.display = 'none';
+            this.card_downloadEl.style.display = 'none';
+            
+        }
+        this.countdownHandle = function() {
+            if (this.countdown <= 0) {
+                this.ad_tips2El.style.display = 'inline';
+                this.ad_tips1El.style.display = 'none';
+            }
+            setTimeout(() => {
+                this.countdown -= 1;
+                this.countdownHandle();
+            }, 1000);
+            this.countdownEl.innerText = this.countdown;
+        }
+
+        this.mutedHandle = function(_muted) {
+            this.muted = _muted;
+            this.video_idEl.muted = this.muted;
+            if (_muted) {
+                this.mutedEl.style.display = 'inline-block';
+                this.noticeEl.style.display = 'none';
+            } else {
+                this.noticeEl.style.display = 'inline-block';
+                this.mutedEl.style.display = 'none';
+            }
+        }
+
     }
-    .start-btn:active{
-        background-color: antiquewhite;
-    }
-</style>
+
+    var videoModel = new VideoModel();
+    setTimeout(() => {
+        videoModel.init()
+        videoModel.playStart()
+    }, 1000);
+
+</script>
 
 <body onload="threeStart();">
 <div id="canvas-frame" ></div>
@@ -1883,7 +2060,48 @@
         再玩一局
     </button>
     <p style="font-size:0.4rem; margin-top:100px;font-weight: 200; ">历史最高得分: <span id="history_highest">0</span></p>
+
     <!-- <img style="margin-top:80px;width:160px;height:60px;" src="source/bottom.png"  onclick="replay();"> -->
+</div>
+<div class="video-box" id="video_box">
+    <div class="video-box-top">
+        <div class="top-left video-radius">
+            <span class="margin-em">广告</span>
+            <span style="margin-bottom: 3px;">|</span>
+            <span class="margin-em" id="ad_tips1">
+                <span id="countdown">25</span>s可获得奖励</span>
+            <span style="display: none;" class="margin-em" id="ad_tips2">已获得奖励</span>
+        </div>
+        <div class="top-right video-radius">
+            <img class="radio-img" id="muted" src="./source/muted.png" alt="" srcset="">
+            <img  style="display: none;"  class="radio-img" id="notice" src="./source/notice.png" alt="" srcset="">
+            <span style="margin-bottom: 3px;">|</span>
+            <span class="margin-em">关闭</span>
+        </div>
+    </div>
+    <div class="video-center">
+        <video muted class="video-index" id="video_id" src="./source/video1.mp4"></video>
+    </div>
+    <div class="card-download" id="card_download">
+        <img class="card-download-logo" src="./source/24trade-logo1.png" alt="">
+        <div class="card-download-info">
+            <div class="card-download-title">24trade pro</div>
+            <div>快去下载送钱了</div>
+        </div>
+        <div class="card-download-btn">
+            理解下载
+        </div>
+    </div>
+    <div class="card-download1" id="card_download1">
+        <img class="card-download-logo" src="./source/24trade-logo1.png" alt="">
+        <div class="card-download-info">
+            <div class="card-download-title">24trade pro</div>
+            <div>快去下载送钱了</div>
+        </div>
+        <div class="card-download-btn">
+            理解下载
+        </div>
+    </div>
 </div>
 <!-- <canvas style="position: absolute; top: 0;left: 0;z-index: 999;width: 100%;height: 100%;">
 
