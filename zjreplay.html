@@ -182,7 +182,61 @@
     
         }
     
-    
+        .popup{
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 99999;
+        }
+        .popup-mark{
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 10;
+            background: rgba(0,0,0,0.6);
+        }
+        .popup-content{
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 20;
+            width: 61.8%;
+            height: 200px;
+            margin: auto;
+            background: white;
+            color: #222;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        .popup-content-body{
+            text-align: center;
+            border-bottom: 1px solid #666;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .popup-content-footer{
+            display: flex;
+            text-align: center;
+
+        }
+        .popup-content-footer-btn{
+            flex: 1;
+            height: 50px;
+            line-height: 50px;
+        }
+        .popup-content-footer-btn:first-child{
+            border-right: 1px solid #666;
+        }
     </style>
 </head>
 
@@ -427,7 +481,6 @@
             
             Option = { px:playerPosition.x ,py:0,pz:playerPosition.z};
 
-            console.log(playerPosition, '==playerPosition')
             jumpr2 = new TWEEN.Tween(Option)
                             .to({
                                 px:[playerPosition.x*0.5,0],
@@ -477,7 +530,6 @@
                                     gameOver(0);
                                     // console.log("竖直下落");
                                 }
-                                console.log(playerPosition,player.position);
                             
                             })  
                             .interpolation( TWEEN.Interpolation.Bezier )
@@ -1972,6 +2024,8 @@
             this.option = option || defaultOptions;
             this.countdown = this.option.countdown;
             this.muted = false;
+            this.timer = null;
+            // this.currentTime = 0;
             this.boxEl = document.getElementById('video_box');
             this.countdownEl = document.getElementById('countdown');
             this.ad_tips1El = document.getElementById('ad_tips1');
@@ -1981,17 +2035,53 @@
             this.card_download1El = document.getElementById('card_download1');
             this.noticeEl = document.getElementById('notice');
             this.mutedEl = document.getElementById('muted');
+            this.closeBtnEl = document.getElementById('close_btn');
+            this.continueEl = document.getElementById('continue');
+            this.give_upEl = document.getElementById('give_up');
+
             if (this.video_idEl) {
-                this.video_idEl.addEventListener('ended', () => {
-                    console.log('end')
-                    this.playEnd()
-                })
+                this.video_idEl.onended = this.playEnd.bind(this)
+            }
+            if (this.closeBtnEl) {
+                this.closeBtnEl.onclick = this.closeEventHandle.bind(this)
+            }
+            if (this.give_upEl) {
+                this.give_upEl.onclick = this.giveUpHandle.bind(this)
+            }
+            if (this.continueEl) {
+                this.continueEl.onclick = this.continueHandle.bind(this)
+            }
+
+            if (this.mutedEl) {
+                this.mutedEl.onclick = this.mutedHandle.bind(this, false)
+            }
+
+            if (this.noticeEl) {
+                this.noticeEl.onclick = this.mutedHandle.bind(this, true)
+            }
+
+        }
+
+        this.closeEventHandle = function() {
+            // this.boxEl.style.display = 'none';
+            this.video_idEl.pause();
+            this.clearHandle();
+            if (this.countdown <= 0) {
+                this.closeHandle();
+                revive()
+            } else {
+                document.getElementById('popup_box').style.display = 'block';
             }
         }
-        this.init()
+
+        // this.continuePlayHandle = function() {
+        //     this.play();
+        //     this.video_idEl.currentTime = this.currentTime;
+        // }
 
         this.playStart = function() {
-            console.log(this)
+            this.boxEl.style.display = 'flex';
+
             this.ad_tips1El.style.display = 'inline';
             this.ad_tips2El.style.display = 'none';
             
@@ -2000,8 +2090,8 @@
             this.card_downloadEl.style.display = 'flex';
 
             this.video_idEl.src = this.option.src;
-            this.video_idEl.play()
             this.mutedHandle(false);
+            this.video_idEl.play();
             this.countdownHandle();
         }
         this.playEnd = function() {
@@ -2010,14 +2100,23 @@
             this.card_download1El.style.display = 'flex';
             this.video_idEl.style.display = 'none';
             this.card_downloadEl.style.display = 'none';
+            this.clearHandle();
             
+        }
+        this.closeHandle = function() {
+            this.boxEl.style.display = 'none';
+            this.video_idEl.pause();
+            this.clearHandle();
+        }
+        this.clearHandle = function() {
+            if (this.timer) clearTimeout(this.timer);
         }
         this.countdownHandle = function() {
             if (this.countdown <= 0) {
                 this.ad_tips2El.style.display = 'inline';
                 this.ad_tips1El.style.display = 'none';
             }
-            setTimeout(() => {
+            this.timer = setTimeout(() => {
                 this.countdown -= 1;
                 this.countdownHandle();
             }, 1000);
@@ -2036,24 +2135,41 @@
             }
         }
 
+        this.giveUpHandle = function() {
+            document.getElementById('popup_box').style.display = 'none';
+            this.closeHandle();
+        }
+
+        this.continueHandle = function() {
+            document.getElementById('popup_box').style.display = 'none';
+            this.video_idEl.play();
+            this.countdownHandle();
+        }
+
+        this.init()
+
+
     }
 
-    var videoModel = new VideoModel();
-    setTimeout(() => {
-        videoModel.init()
+    var videoModel;
+
+    function playHandle() {
+        var videoModel = new VideoModel();
         videoModel.playStart()
-    }, 1000);
+        // revive()
+    }
+
 
 </script>
 
 <body onload="threeStart();">
 <div id="canvas-frame" ></div>
-<div id="point" onclick="revive()"> 0 </div>
+<div id="point"> 0 </div>
 <div id="gameOver" >
     <p id="normal_score"  style="font-size:0.5rem; margin-top:100px;font-weight: 200; ">本次得分</p>
     <p id="new_score" style="font-size:0.5rem; margin-top:100px;font-weight: 200;display: none; ">= <span style="color: #f53c00">新纪录</span> =</p>
     <p style="font-size:1rem; margin-top:20px; font-family: numjump;" id= "pointtotal" >0</p>
-    <button style="margin-top: 75%;" class="start-btn" onclick="revive();">
+    <button style="margin-top: 75%;" class="start-btn" onclick="playHandle();">
         看广告复活
     </button>
     <button style="margin-top: 60px;" class="start-btn" onclick="replay();">
@@ -2063,20 +2179,20 @@
 
     <!-- <img style="margin-top:80px;width:160px;height:60px;" src="source/bottom.png"  onclick="replay();"> -->
 </div>
-<div class="video-box" id="video_box">
+<div class="video-box" id="video_box" style="display: none;">
     <div class="video-box-top">
         <div class="top-left video-radius">
             <span class="margin-em">广告</span>
             <span style="margin-bottom: 3px;">|</span>
             <span class="margin-em" id="ad_tips1">
-                <span id="countdown">25</span>s可获得奖励</span>
+                <span id="countdown">25</span>s 可获得奖励</span>
             <span style="display: none;" class="margin-em" id="ad_tips2">已获得奖励</span>
         </div>
         <div class="top-right video-radius">
             <img class="radio-img" id="muted" src="./source/muted.png" alt="" srcset="">
             <img  style="display: none;"  class="radio-img" id="notice" src="./source/notice.png" alt="" srcset="">
             <span style="margin-bottom: 3px;">|</span>
-            <span class="margin-em">关闭</span>
+            <span id='close_btn' class="margin-em">关闭</span>
         </div>
     </div>
     <div class="video-center">
@@ -2100,6 +2216,19 @@
         </div>
         <div class="card-download-btn">
             理解下载
+        </div>
+    </div>
+</div>
+<div class="popup" id="popup_box" style="display: none;">
+    <div class="popup-mark"></div>
+    <div class="popup-content">
+        <div class="popup-content-body">
+            <p>暂未获得奖励</p>
+            <p>是否继续观看视频</p>
+        </div>
+        <div class="popup-content-footer">
+            <div id="give_up" class="popup-content-footer-btn">放弃</div>
+            <div id="continue" class="popup-content-footer-btn">继续</div>
         </div>
     </div>
 </div>
