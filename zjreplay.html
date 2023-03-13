@@ -237,6 +237,106 @@
         .popup-content-footer-btn:first-child{
             border-right: 1px solid #666;
         }
+
+        .lucky-box{
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            color: #fff;
+            z-index: 9999;
+        }
+        .lucky-box-musk{
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 9;
+            background-color: rgba(0,0,0,0.6);
+        }
+        .lucky-box-content{
+            position: absolute;
+            /* top: 0; */
+            left: 0;
+            right: 0;
+            /* bottom: 0; */
+            z-index: 20;
+            margin: auto;
+            top: 50%;
+            transform: translateY(-60%);
+            width: 80%;
+            height: auto;
+        }
+        .lucky-box-content .b-img{
+            width: 100%;
+            height: auto;
+        }
+        .lucky-box-content .btn{
+            background: transparent;
+            border: none;
+            outline: none;
+            position: relative;
+            margin-top: 1rem;
+        }
+        .lucky-box-content .btn-img{
+            width: 72%;
+            height: auto;
+        }
+        .lucky-box-content .close-img{
+            width: 36px;
+            height: auto;
+            margin-top: 0.5rem;
+        }
+        .lucky-box-content .btn-text{
+            position: absolute;
+            text-align: center;
+            width: 100%;
+            color: #854600;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+            height: 0.5rem;
+            font-size: 0.5rem;
+            line-height: 0.5rem;
+        }
+        .lucky-box-content-body{
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 33.5%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .lucky-box .top-text{
+            text-align: center;
+            font-size: 0.4rem;
+        }
+        .lucky-box .center-text{
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            height: 2.2rem;
+            font-weight: bold;
+            margin-top: .8rem;
+        }
+        .lucky-box .center-text .text1 {
+            font-size: 0.4rem;
+        }
+        .lucky-box .center-text .text2 {
+            font-size: 2.5rem;
+            line-height: 2.2rem;
+        }
+        .lucky-box .center-text .text3 {
+            height: 100%;
+        }
+        .lucky-box .bottom-text{
+            margin-top: 1.2rem;
+            font-size: 0.4rem;
+            padding-left: 1rem;
+        }
     </style>
 </head>
 
@@ -2232,6 +2332,44 @@
         </div>
     </div>
 </div>
+<div class="lucky-box">
+    <div class="lucky-box-musk"></div>
+    <div class="lucky-box-content">
+        <img class="b-img" src="./source/card.png" alt="card" />
+        <div class="lucky-box-content-body">
+            <div>
+                <div class="top-text">Obter bônus em dinheiro</div>
+                <div class="center-text">
+                    <span class="text1">R$</span>
+                    <span class="text2">68</span>
+                    <span class="text3">Máximo</span>
+                </div>
+                <div class="bottom-text">
+                    Tempo efetivo：10 min
+                </div>
+            </div>
+            <button
+            marginTop="32px"
+            class="btn"
+            >
+                <img
+                    class="btn-img"
+                    src="./source/card-btn.png"
+                    alt="btn"
+                />
+                <div class="btn-text">
+                    Faça login para receber
+                </div>
+            </button>
+            <div>
+                <img
+                    class="close-img"
+                    src="./source/close-btn.png"
+                    alt="">
+            </div>
+        </div>
+      </div>
+</div>
 <!-- <canvas style="position: absolute; top: 0;left: 0;z-index: 999;width: 100%;height: 100%;">
 
 </canvas> -->
@@ -2240,3 +2378,4 @@
 </div> -->
 </body>
 </html>
+
